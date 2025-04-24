@@ -3,20 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <title>Excel Summary Add-In</title>
-
-  <!-- Load Office.js -->
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 
-  <script type="text/javascript">
+  <script>
     Office.onReady(() => {
-      console.log("Office.js is ready");
-
-      // Expose generateSummary globally
       window.generateSummary = async function () {
         try {
-          console.log("Running generateSummary...");
+          console.log("[1] Running generateSummary");
 
           await Excel.run(async (context) => {
+            console.log("[2] Reading table from sheet");
+
             const sheet = context.workbook.worksheets.getActiveWorksheet();
             const range = sheet.getUsedRange();
             range.load("values");
@@ -25,16 +22,11 @@
             const tableText = range.values.map(row => row.join("\t")).join("\n");
             const prompt = "Summarize the following table using the same wording and structure as the training summary. Do not omit any section or sub-table.\n\n" + tableText;
 
-            console.log("Prompt being sent:\n", prompt);
-
-            const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ"; 
+            const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ";
             const apiKey = atob(encodedKey);
-            const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview";  
+            const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview";
 
-            console.log("Endpoint:", endpoint);
-            console.log("API Key decoded:", apiKey);
-            console.log("Sending request...");
-
+            console.log("[3] Sending request to API");
 
             const response = await fetch(endpoint, {
               method: "POST",
@@ -56,22 +48,21 @@
             });
 
             const result = await response.json();
-            console.log("API Response:", result);
+            const summary = result.choices[0].message.content;
+            console.log("[4] Received summary from API");
 
-            const summary = result.choices?.[0]?.message?.content || "No summary generated";
-            console.log("Generated Summary:\n", summary);
+            const encodedSummary = encodeURIComponent(encodeURIComponent(summary)); // DOUBLE encode
 
-            // Show result in popup dialog
             Office.context.ui.displayDialogAsync(
-              `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${encodeURIComponent(summary)}`,
+              `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${encodedSummary}`,
               { height: 40, width: 40 }
             );
           });
         } catch (error) {
-          console.error("ERROR in generateSummary:", error.message);
-
+          console.error("Error in generateSummary:", error.message);
+          const fallback = encodeURIComponent(encodeURIComponent("ERROR: " + error.message));
           Office.context.ui.displayDialogAsync(
-            `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${encodeURIComponent("ERROR: " + error.message)}`,
+            `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${fallback}`,
             { height: 30, width: 30 }
           );
         }

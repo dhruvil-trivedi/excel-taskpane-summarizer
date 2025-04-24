@@ -1,10 +1,11 @@
+<!-- taskpane.html hosted on GitHub Pages -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <title>Excel Summary Add-In</title>
 
-  <!--  Load Office JavaScript APIs -->
+  <!-- Office.js reference -->
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 
   <script>
@@ -19,8 +20,7 @@
           const tableText = range.values.map(row => row.join("\t")).join("\n");
           const prompt = "Summarize the following table using the same wording and structure as the training summary. Do not omit any section or sub-table.\n\n" + tableText;
 
-          // Obfuscated API key
-          const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ"; // Replace with Base64
+          const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ"; // Replace with base64 encoded API key
           const apiKey = atob(encodedKey);
 
           const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview";
@@ -65,7 +65,6 @@
     }
   </script>
 </head>
-
 <body>
   <h2>Generate Table Summary</h2>
   <button onclick="generateSummary()">Generate Summary</button>

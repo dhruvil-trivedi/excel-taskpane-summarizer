@@ -10,16 +10,19 @@
       try {
         console.log("[Phase 2] Checking for URL param");
         const params = new URLSearchParams(window.location.search);
-        let textParam = params.get("text");
-
-        if (!textParam) throw new Error("No 'text' parameter found.");
+        const raw = params.get("text");
+        if (!raw) throw new Error("No 'text' parameter found.");
 
         console.log("[Phase 3] Decoding summary...");
-        const decodedOnce = decodeURIComponent(textParam);
-        const decodedTwice = decodeURIComponent(decodedOnce);
+        let decoded = decodeURIComponent(raw);
+        try {
+          decoded = decodeURIComponent(decoded);
+        } catch (e) {
+          console.warn("[WARN] Double decode failed, using single decode.");
+        }
 
-        console.log("[Phase 4] Displaying summary...");
-        document.getElementById("summary").innerText = decodedTwice;
+        console.log("[Phase 4] Displaying summary");
+        document.getElementById("summary").innerText = decoded;
       } catch (error) {
         console.error("[ERROR] Failed to parse summary:", error);
         document.getElementById("summary").innerText = `Error loading summary: ${error}`;

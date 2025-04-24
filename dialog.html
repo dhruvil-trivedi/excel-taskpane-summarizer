@@ -7,24 +7,22 @@
     console.log("[Phase 1] Dialog loading...");
 
     window.onload = () => {
-      console.log("[Phase 2] Checking for URL param");
-
       try {
+        console.log("[Phase 2] Checking for URL param");
         const params = new URLSearchParams(window.location.search);
-        const encodedText = params.get("text");
+        let textParam = params.get("text");
 
-        if (!encodedText) {
-          throw new Error("No 'text' query parameter found");
-        }
+        if (!textParam) throw new Error("No 'text' parameter found.");
 
-        const decodedOnce = decodeURIComponent(encodedText);
-        const decodedSummary = decodeURIComponent(decodedOnce);
+        console.log("[Phase 3] Decoding summary...");
+        const decodedOnce = decodeURIComponent(textParam);
+        const decodedTwice = decodeURIComponent(decodedOnce);
 
-        console.log("[Phase 3] Decoding complete. Inserting summary.");
-        document.getElementById("summary").innerText = decodedSummary;
+        console.log("[Phase 4] Displaying summary...");
+        document.getElementById("summary").innerText = decodedTwice;
       } catch (error) {
-        console.error("[ERROR] Failed to parse summary:", error.message);
-        document.getElementById("summary").innerText = `Error loading summary: ${error.message}`;
+        console.error("[ERROR] Failed to parse summary:", error);
+        document.getElementById("summary").innerText = `Error loading summary: ${error}`;
       }
     };
   </script>

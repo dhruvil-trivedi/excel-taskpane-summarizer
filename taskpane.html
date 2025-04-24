@@ -7,23 +7,29 @@
 
   <script>
     Office.onReady(() => {
-      window.generateSummary = async function () {
-        try {
-          console.log("[1] Starting summary generation");
+      console.log("[START] Office.js ready");
 
+      window.generateSummary = async function () {
+        console.log("[PHASE 1] Summary generation triggered");
+
+        try {
           await Excel.run(async (context) => {
+            console.log("[PHASE 2] Reading selected range");
+
             const sheet = context.workbook.worksheets.getActiveWorksheet();
             const range = sheet.getUsedRange();
             range.load("values");
             await context.sync();
 
+            console.log("[PHASE 3] Formatting input as prompt");
             const tableText = range.values.map(row => row.join("\t")).join("\n");
             const prompt = "Summarize the following table using the same wording and structure as the training summary. Do not omit any section or sub-table.\n\n" + tableText;
 
-            const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ";
+            const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ"; 
             const apiKey = atob(encodedKey);
             const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview"; 
 
+            console.log("[PHASE 4] Sending request to API...");
             const response = await fetch(endpoint, {
               method: "POST",
               headers: {
@@ -45,24 +51,34 @@
 
             const result = await response.json();
             const summary = result.choices[0].message.content;
+            console.log("[PHASE 5] Summary received from model");
 
-            console.log("[2] Opening dialog box");
+            console.log("[PHASE 6] Opening dialog window...");
             Office.context.ui.displayDialogAsync(
               "https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html",
               { height: 40, width: 40 },
               function (asyncResult) {
                 const dialog = asyncResult.value;
-                dialog.addEventHandler(Office.EventType.DialogMessageReceived, () => {});
-                dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {});
-                
+
                 dialog.addEventHandler(Office.EventType.DialogReady, () => {
+                  console.log("[PHASE 7] Dialog ready, sending summary");
                   dialog.messageChild(summary);
                 });
               }
             );
           });
         } catch (error) {
-          console.error("Error in generateSummary:", error.message);
+          console.error("[ERROR] generateSummary:", error.message);
+          Office.context.ui.displayDialogAsync(
+            "https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html",
+            { height: 40, width: 40 },
+            function (asyncResult) {
+              const dialog = asyncResult.value;
+              dialog.addEventHandler(Office.EventType.DialogReady, () => {
+                dialog.messageChild("Error generating summary: " + error.message);
+              });
+            }
+          );
         }
       };
     });

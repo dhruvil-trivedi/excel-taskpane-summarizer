@@ -1,43 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <title>Generated Summary</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      padding: 20px;
-      font-size: 14px;
-      background-color: #f9f9f9;
-    }
-    h3 {
-      margin-bottom: 12px;
-      color: #333;
-    }
-    #summary {
-      white-space: pre-wrap;
-      background-color: #ffffff;
-      border: 1px solid #ccc;
-      padding: 12px;
-      color: #444;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-  </style>
   <script>
     window.onload = () => {
-      const params = new URLSearchParams(window.location.search);
-      const summary = decodeURIComponent(params.get("text") || "No summary received.");
-      document.getElementById("summary").innerText = summary;
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const encodedText = params.get("text");
+        const summary = decodeURIComponent(decodeURIComponent(encodedText));
+        document.getElementById("summary").innerText = summary;
+      } catch (e) {
+        console.error("Dialog error:", e.message);
+        document.getElementById("summary").innerText = "Error loading summary: " + e.message;
+      }
     };
-window.onerror = function(message, source, lineno, colno, error) {
-  document.getElementById("summary").innerText = "Error loading summary: " + message;
-};
-
   </script>
 </head>
 <body>
   <h3>Generated Summary</h3>
-  <div id="summary">Loading...</div>
+  <pre id="summary">Loading...</pre>
 </body>
 </html>

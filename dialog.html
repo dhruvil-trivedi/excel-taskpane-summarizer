@@ -30,6 +30,10 @@
       const summary = decodeURIComponent(params.get("text") || "No summary received.");
       document.getElementById("summary").innerText = summary;
     };
+window.onerror = function(message, source, lineno, colno, error) {
+  document.getElementById("summary").innerText = "Error loading summary: " + message;
+};
+
   </script>
 </head>
 <body>

@@ -51,7 +51,7 @@
 
             const result = await response.json();
             const summary = result.choices[0].message.content;
-            console.log("[Phase 4] Received response. Preview:", summary);
+            console.log("[Phase 4] Received response.");
 
             const encodedSummary = encodeURIComponent(encodeURIComponent(summary)); // DOUBLE encoding for safety
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generated Summary</title>
+  <script>
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      const summary = decodeURIComponent(params.get("text") || "No summary found.");
+      document.getElementById("summary").innerText = summary;
+    };
+  </script>
+</head>
+<body>
+  <h3>Generated Summary</h3>
+  <pre id="summary">Loading...</pre>
+</body>
+</html>

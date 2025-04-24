@@ -3,14 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>Generated Summary</title>
-  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script>
-    Office.onReady(() => {
-      Office.context.ui.addHandlerAsync(Office.EventType.DialogParentMessageReceived, function (arg) {
-        const summary = arg.message;
-        document.getElementById("summary").innerText = summary;
-      });
-    });
+    console.log("[Phase 1] Dialog loading...");
+
+    window.onload = () => {
+      console.log("[Phase 2] Checking for URL param");
+
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const encodedText = params.get("text");
+
+        if (!encodedText) {
+          throw new Error("No 'text' query parameter found");
+        }
+
+        const decodedOnce = decodeURIComponent(encodedText);
+        const decodedSummary = decodeURIComponent(decodedOnce);
+
+        console.log("[Phase 3] Decoding complete. Inserting summary.");
+        document.getElementById("summary").innerText = decodedSummary;
+      } catch (error) {
+        console.error("[ERROR] Failed to parse summary:", error.message);
+        document.getElementById("summary").innerText = `Error loading summary: ${error.message}`;
+      }
+    };
   </script>
 </head>
 <body>

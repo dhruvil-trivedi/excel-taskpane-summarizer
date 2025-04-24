@@ -45,6 +45,8 @@
 
             const result = await response.json();
             const summary = result.choices[0].message.content;
+            console.log("Generated Summary is:", summary);
+
 
             Office.context.ui.displayDialogAsync(
               `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${encodeURIComponent(summary)}`,

@@ -9,11 +9,9 @@
     Office.onReady(() => {
       window.generateSummary = async function () {
         try {
-          console.log("[1] Running generateSummary");
+          console.log("[1] Starting summary generation");
 
           await Excel.run(async (context) => {
-            console.log("[2] Reading table from sheet");
-
             const sheet = context.workbook.worksheets.getActiveWorksheet();
             const range = sheet.getUsedRange();
             range.load("values");
@@ -24,9 +22,7 @@
 
             const encodedKey = "MmJ3dEJTN0s3cHpGMnlXQnlqZ2tXaTNFVDBJaFVyVk9IYkZubDVUYXdiSWNmaUttMGc3dkpRUUo5OUJEQUNIcnpwcVhKM3czQUFBQkFDT0dEUUtZ";
             const apiKey = atob(encodedKey);
-            const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview";
-
-            console.log("[3] Sending request to API");
+            const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview"; 
 
             const response = await fetch(endpoint, {
               method: "POST",
@@ -49,22 +45,24 @@
 
             const result = await response.json();
             const summary = result.choices[0].message.content;
-            console.log("[4] Received summary from API");
 
-            const encodedSummary = encodeURIComponent(encodeURIComponent(summary)); // DOUBLE encode
-
+            console.log("[2] Opening dialog box");
             Office.context.ui.displayDialogAsync(
-              `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${encodedSummary}`,
-              { height: 40, width: 40 }
+              "https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html",
+              { height: 40, width: 40 },
+              function (asyncResult) {
+                const dialog = asyncResult.value;
+                dialog.addEventHandler(Office.EventType.DialogMessageReceived, () => {});
+                dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {});
+                
+                dialog.addEventHandler(Office.EventType.DialogReady, () => {
+                  dialog.messageChild(summary);
+                });
+              }
             );
           });
         } catch (error) {
           console.error("Error in generateSummary:", error.message);
-          const fallback = encodeURIComponent(encodeURIComponent("ERROR: " + error.message));
-          Office.context.ui.displayDialogAsync(
-            `https://dhruvil-trivedi.github.io/excel-taskpane-summarizer/dialog.html?text=${fallback}`,
-            { height: 30, width: 30 }
-          );
         }
       };
     });

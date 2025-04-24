@@ -31,6 +31,11 @@
             const apiKey = atob(encodedKey);
             const endpoint = "https://excelsummary.openai.azure.com/openai/deployments/gpt-4-0613-ft-1afdc7410eda42a1aac5db4ffd4e73c0/chat/completions?api-version=2025-01-01-preview";  
 
+            console.log("Endpoint:", endpoint);
+            console.log("API Key decoded:", apiKey);
+            console.log("Sending request...");
+
+
             const response = await fetch(endpoint, {
               method: "POST",
               headers: {

@@ -5,12 +5,14 @@
 
   <Id>88e053f4-3f42-4f1a-b1fc-9a21f98cbfb2</Id>
   <Version>1.0.0.0</Version>
+  <ProviderName>Think AI</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
-  <DisplayName DefaultValue="Excel Audit Summarizer"/>
-  <Description DefaultValue="Summarize Excel tables using a taskpane add-in."/>
+  <DisplayName DefaultValue="Generate Summary Excel Add-in"/>
+  <Description DefaultValue="Summarize tables using GPT model deployed in Azure"/>
 
   <IconUrl DefaultValue="https://cdn-icons-png.flaticon.com/512/732/732220.png"/>
+  <SupportUrl DefaultValue="https://github.com/dhruvil-trivedi/excel-taskpane-summarizer"/>
 
   <Hosts>
     <Host Name="Workbook"/>
